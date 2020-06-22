@@ -25,36 +25,44 @@ def download(link):
     print(downloadName)
     urllib.request.urlretrieve(downloadLink,fileName)
 def snatchVideoLink(driver):
-    wait = WebDriverWait(driver,15)
+    wait = WebDriverWait(driver,50)
     # switching to iframe
-    iframe = wait.until(lambda driver: driver.find_element(By.TAG_NAME, "iframe"))
-    driver.switch_to.frame(iframe)
     try:
-        wait.until(
-            EC.presence_of_element_located((By.XPATH,"//button[@class='ext_dl-button rounded-box']"))
-        ).click()      
-        link = wait.until(
-            EC.presence_of_element_located((By.XPATH,"//a[4]"))
+        # iframe = wait.until(lambda driver: driver.find_element(By.TAG_NAME, "iframe"))
+        iframe = wait.until(
+            EC.presence_of_element_located((By.TAG_NAME, "iframe"))
         )
-        download(link)
+        driver.switch_to.frame(iframe)
+        # find video link
+        try:
+            wait.until(
+                EC.presence_of_element_located((By.XPATH,"//button[@class='ext_dl-button rounded-box']"))
+            ).click()      
+            link = wait.until(
+                EC.presence_of_element_located((By.XPATH,"//a[4]"))
+            )
+            download(link)
+        except Exception as e:
+            print("\n exception in snatchVideoLink (link problem) \n",e)
+        finally:
+            driver.switch_to.default_content()
     except Exception as e:
-        print("exception in snatchVideoLink ",e)
-    finally:
-        driver.switch_to.default_content()
+        print("\n exception in snatchVideoLink (iframe problem) \n",e)  
 def landingPage(driver,link):
     driver.get(link)
     print(link)
     window = driver.current_window_handle
     wait = WebDriverWait(driver,50)
     nextLink = None
-    try: 
-        snatchVideoLink(driver)       
+    try:
+        snatchVideoLink(driver)
         nextLink = wait.until(
             EC.presence_of_element_located((By.ID,"next-activity-link"))
         )
         landingPage(driver,nextLink.get_attribute("href"))
     except Exception as e:
-        print("exception in landingPage ",e)
+        print("\n exception in landingPage \n ",e)
+
 
 
 

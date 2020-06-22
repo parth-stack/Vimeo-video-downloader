@@ -47,7 +47,6 @@ def snatchVideoLink(driver):
             driver.switch_to.default_content()
     except Exception as e:
         print("\n exception in snatchVideoLink (iframe problem) \n",e)
-    
 def landingPage(driver,link):
     driver.get(link)
     print(link)
