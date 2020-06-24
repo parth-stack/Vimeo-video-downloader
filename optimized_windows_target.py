@@ -28,25 +28,44 @@ def snatchVideoLink(driver):
     wait = WebDriverWait(driver,50)
     # switching to iframe
     try:
+        # iframe = wait.until(lambda driver: driver.find_element(By.TAG_NAME, "iframe"))
         iframe = wait.until(
             EC.presence_of_element_located((By.TAG_NAME, "iframe"))
         )
         driver.switch_to.frame(iframe)
-        # find video link
+        # find and download video link
         try:
+            # click button
             wait.until(
                 EC.presence_of_element_located((By.XPATH,"//button[@class='ext_dl-button rounded-box']"))
-            ).click()      
-            link = wait.until(
-                EC.presence_of_element_located((By.XPATH,"//a[4]"))
-            )
-            download(link)
+            ).click()
+            # find link
+            link = None
+            try:
+                wait2 = WebDriverWait(driver,5)
+                link = wait2.until(
+                    EC.presence_of_element_located((By.XPATH,"//a[1]"))
+                )
+                link = wait2.until(
+                    EC.presence_of_element_located((By.XPATH,"//a[2]"))
+                )
+                link = wait2.until(
+                    EC.presence_of_element_located((By.XPATH,"//a[3]"))
+                )
+                link = wait2.until(
+                    EC.presence_of_element_located((By.XPATH,"//a[4]"))
+                )
+            except Exception as e:
+                print("\n least link problem \n",e)    
+            # download link
+            if(link!=None):
+                download(link)
         except Exception as e:
-            print("\n exception in snatchVideoLink (link problem) \n",e)
+            print("\n exception in snatchVideoLink (button problem) \n",e)
         finally:
             driver.switch_to.default_content()
     except Exception as e:
-        print("\n exception in snatchVideoLink (iframe problem) \n",e)
+        print("\n exception in snatchVideoLink (iframe problem) \n",e)  
 def landingPage(driver,link):
     driver.get(link)
     print(link)
